@@ -9,35 +9,35 @@ class JasperReportsPluginTest extends GroovyTestCase {
 
 	public void testPluginAddsJasperReportsPreCompileTask() {
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 
 		assert project.tasks.prepareReportsCompilation instanceof JasperReportsPreCompile
     }
 
 	public void testPluginAddsJasperReportsCompileTask() {
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 
 		assert project.tasks.compileAllReports instanceof JasperReportsCompile
 	}
 
 	public void testCompileAllReportsDependsOnPrepareReportsCompilation() {
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 
 		assert project.tasks.compileAllReports.dependsOn(project.tasks.prepareReportsCompilation)
 	}
 
 	public void testPluginAddsJasperReportsExtension() {
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 
 		assert project.jasperreports instanceof JasperReportsExtension
 	}
 
 	public void testPluginHasDefaultValues() {
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 
 		def jasperreports = project.jasperreports as JasperReportsExtension
 		assert jasperreports.classpath == []
@@ -58,7 +58,7 @@ class JasperReportsPluginTest extends GroovyTestCase {
 		File tmp = new File('tmp/jasperreports')
 		File out = new File('out/jasperreports')
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 		project.jasperreports {
 			srcDir = src
 			tmpDir = tmp
@@ -82,7 +82,7 @@ class JasperReportsPluginTest extends GroovyTestCase {
 		String src = '.xml'
 		String out = '.class'
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 		project.jasperreports {
 			srcExt = src
 			outExt = out
@@ -101,7 +101,7 @@ class JasperReportsPluginTest extends GroovyTestCase {
 	public void testPluginSpreadsClasspathOption() {
 		Project project = ProjectBuilder.builder().build()
 		project.apply plugin: 'groovy'
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 		project.jasperreports {
 			classpath = project.sourceSets.main.output
 		}
@@ -114,7 +114,7 @@ class JasperReportsPluginTest extends GroovyTestCase {
 	public void testPluginSpreadsCompilerOption() {
 		String groovyCompiler = 'net.sf.jasperreports.compilers.JRGroovyCompiler'
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 		project.jasperreports {
 			compiler = groovyCompiler
 		}
@@ -126,7 +126,7 @@ class JasperReportsPluginTest extends GroovyTestCase {
 
 	public void testPluginSpreadsKeepJavaOption() {
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 		project.jasperreports {
 			keepJava = true
 		}
@@ -138,7 +138,7 @@ class JasperReportsPluginTest extends GroovyTestCase {
 
 	public void testPluginSpreadsValidateXmlOption() {
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 		project.jasperreports {
 			validateXml = false
 		}
@@ -150,7 +150,7 @@ class JasperReportsPluginTest extends GroovyTestCase {
 
 	public void testPluginSpreadsVerboseOption() {
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 		project.jasperreports {
 			verbose = true
 		}
@@ -163,7 +163,7 @@ class JasperReportsPluginTest extends GroovyTestCase {
 
 	public void testPluginSpreadsUseRelativeOutDirOption() {
 		Project project = ProjectBuilder.builder().build()
-		project.apply plugin: 'com.github.max312.jasperreports'
+		project.apply plugin: 'eu.rehost.jasperreports'
 		project.jasperreports {
 			useRelativeOutDir = true
 		}
