@@ -8,7 +8,7 @@ plugins {
 
 // Unless overridden in the pluginBundle config DSL, the project version will
 // be used as your plugin version when publishing
-group = 'com.github.max312'
+group = 'eu.rehost'
 version = project.property('version')
 
 repositories {
@@ -29,8 +29,8 @@ dependencies {
 gradlePlugin {
 	plugins {
 		jasperreports {
-			id = 'com.github.max312.jasperreports'
-			implementationClass = 'com.github.max312.plugins.JasperReportsPlugin'
+			id = 'eu.rehost.jasperreports'
+			implementationClass = 'eu.rehost.plugins.JasperReportsPlugin'
 		}
 	}
 }

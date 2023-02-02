@@ -1,7 +1,7 @@
-package com.github.max312.plugins
+package eu.rehost.plugins
 
-import com.github.max312.tasks.JasperReportsCompile
-import com.github.max312.tasks.JasperReportsPreCompile
+import eu.rehost.tasks.JasperReportsCompile
+import eu.rehost.tasks.JasperReportsPreCompile
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 

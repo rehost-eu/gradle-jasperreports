@@ -1,4 +1,4 @@
-package com.github.max312.tasks
+package eu.rehost.tasks
 
 import net.sf.jasperreports.engine.JasperCompileManager
 import org.gradle.api.DefaultTask

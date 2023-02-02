@@ -1,4 +1,4 @@
-package com.github.max312.plugins
+package eu.rehost.plugins
 
 import org.gradle.api.Project
 
