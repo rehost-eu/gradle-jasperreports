@@ -8,15 +8,13 @@ plugins {
 
 // Unless overridden in the pluginBundle config DSL, the project version will
 // be used as your plugin version when publishing
-group = 'com.github.gmazelier'
+group = 'com.github.max312'
 version = project.property('version')
 
 repositories {
-	jcenter()
 	mavenCentral()
-	maven {
-		url 'http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/'
-	}
+  maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/" }
+
 }
 
 dependencies {
@@ -31,16 +29,16 @@ dependencies {
 gradlePlugin {
 	plugins {
 		jasperreports {
-			id = 'com.github.gmazelier.jasperreports'
-			implementationClass = 'com.github.gmazelier.plugins.JasperReportsPlugin'
+			id = 'com.github.max312.jasperreports'
+			implementationClass = 'com.github.max312.plugins.JasperReportsPlugin'
 		}
 	}
 }
 
 pluginBundle {
 	// These settings are set for the whole plugin bundle
-	website = 'https://github.com/gmazelier/gradle-jasperreports'
-	vcsUrl = 'https://github.com/gmazelier/gradle-jasperreports.git'
+	website = 'https://github.com/max312/gradle-jasperreports'
+	vcsUrl = 'https://github.com/max312/gradle-jasperreports.git'
 	description = 'Provides the capability to compile JasperReports design files.'
 	tags = ['gradle', 'jasperreports']
 

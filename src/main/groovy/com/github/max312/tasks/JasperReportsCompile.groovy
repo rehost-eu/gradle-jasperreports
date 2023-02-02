@@ -1,4 +1,4 @@
-package com.github.gmazelier.tasks
+package com.github.max312.tasks
 
 import net.sf.jasperreports.engine.JasperCompileManager
 import org.gradle.api.DefaultTask

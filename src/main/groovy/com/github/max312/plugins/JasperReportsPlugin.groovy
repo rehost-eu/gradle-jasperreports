@@ -1,7 +1,7 @@
-package com.github.gmazelier.plugins
+package com.github.max312.plugins
 
-import com.github.gmazelier.tasks.JasperReportsCompile
-import com.github.gmazelier.tasks.JasperReportsPreCompile
+import com.github.max312.tasks.JasperReportsCompile
+import com.github.max312.tasks.JasperReportsPreCompile
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
