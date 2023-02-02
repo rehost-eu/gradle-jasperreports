@@ -1,4 +1,4 @@
-package com.github.gmazelier.plugins
+package com.github.max312.plugins
 
 import org.gradle.api.Project
 
