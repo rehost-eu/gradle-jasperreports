@@ -1,6 +1,6 @@
 plugins {
-  id 'com.gradle.plugin-publish' version '0.10.1'
-  id 'net.researchgate.release' version '2.6.0'
+	id 'com.gradle.plugin-publish' version '1.1.0'
+	id 'net.researchgate.release' version '2.6.0'
 	id 'groovy'
 	id 'maven-publish'
 	id 'java-gradle-plugin'
@@ -13,43 +13,30 @@ version = project.property('version')
 
 repositories {
 	mavenCentral()
-  maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/" }
-
+  	maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/" }
 }
 
 dependencies {
-	implementation gradleApi()
-	implementation localGroovy()
-	implementation 'net.sf.jasperreports:jasperreports:6.10.0'
+	implementation 'net.sf.jasperreports:jasperreports:6.20.0'
 	implementation 'org.codehaus.gpars:gpars:1.2.1'
-	testImplementation 'junit:junit:4.12'
+	testImplementation 'junit:junit:4.13.1'
 }
 
 // Use java-gradle-plugin to generate plugin descriptors and specify plugin ids
 gradlePlugin {
-	plugins {
-		jasperreports {
-			id = 'eu.rehost.jasperreports'
-			implementationClass = 'eu.rehost.plugins.JasperReportsPlugin'
-		}
-	}
-}
-
-pluginBundle {
-	// These settings are set for the whole plugin bundle
 	website = 'https://github.com/max312/gradle-jasperreports'
 	vcsUrl = 'https://github.com/max312/gradle-jasperreports.git'
-	description = 'Provides the capability to compile JasperReports design files.'
-	tags = ['gradle', 'jasperreports']
-
 	plugins {
+
 		jasperreports {
-			// id is captured from java-gradle-plugin configuration
+			id = 'eu.rehost.jasperreports'
+			description = 'Provides the capability to compile JasperReports design files.'
+			implementationClass = 'eu.rehost.plugins.JasperReportsPlugin'
 			displayName = 'Gradle JasperReports Plugin'
+			tags.set(['jasperreports'])
 		}
 	}
 }
-
 publishing {
 	// uncomment the following section to publish plugin to local maven repository using the following task:
 	// $ gradle publishToMavenLocal
