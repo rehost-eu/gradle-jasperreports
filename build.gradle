@@ -25,8 +25,8 @@ dependencies {
 
 // Use java-gradle-plugin to generate plugin descriptors and specify plugin ids
 gradlePlugin {
-	website = 'https://github.com/max312/gradle-jasperreports'
-	vcsUrl = 'https://github.com/max312/gradle-jasperreports.git'
+	website = 'https://git.rehost.eu/rehost/gradle-jasperreports'
+	vcsUrl = 'https://git.rehost.eu/rehost/gradle-jasperreports.git'
 	plugins {
 
 		jasperreports {
