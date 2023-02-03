@@ -13,10 +13,11 @@ version = project.property('version')
 
 repositories {
 	mavenCentral()
-  	maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/" }
+  	maven { url 'https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/' }
 }
 
 dependencies {
+	implementation 'com.lowagie:itext:2.1.7'
 	implementation 'net.sf.jasperreports:jasperreports:6.20.0'
 	implementation 'org.codehaus.gpars:gpars:1.2.1'
 	testImplementation 'junit:junit:4.13.1'
@@ -60,12 +61,13 @@ compileGroovy {
 	targetCompatibility = '1.8'
 }
 
-task sourcesJar(type: Jar) {
+tasks.register('sourcesJar', Jar) {
 	archiveClassifier.set('sources')
 	from sourceSets.main.allSource
 }
 
-task groovydocJar(type: Jar, dependsOn: groovydoc) {
+tasks.register('groovydocJar', Jar) {
+	dependsOn groovydoc
 	archiveClassifier.set('groovydoc')
 	from groovydoc.destinationDir
 }
