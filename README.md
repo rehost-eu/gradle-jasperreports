@@ -34,7 +34,7 @@ To clean up and start fresh, simply run:
 Using the pluging DSL...
 
     plugins {
-      id "eu.rehost.jasperreports" version "0.8"
+      id "eu.rehost.jasperreports" version "0.10"
     }
 
 Using the legacy plugin application...
@@ -46,7 +46,7 @@ Using the legacy plugin application...
         }
       }
       dependencies {
-        classpath "eu.rehost:jasperreports-gradle-plugin:0.8"
+        classpath "eu.rehost:jasperreports-gradle-plugin:0.10"
       }
     }
 
@@ -123,7 +123,7 @@ Here's a way to share dependencies (`joda-time` in this example) between the mai
         }
       }
       dependencies {
-        classpath 'eu.rehost:jasperreports-gradle-plugin:0.3.2'
+        classpath 'eu.rehost:jasperreports-gradle-plugin:0.10'
         classpath libs.jrdeps
       }
     }
