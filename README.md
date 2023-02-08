@@ -1,6 +1,6 @@
 # Gradle JasperReports Plugin
 ## Info
-Forked from https://github.com/gmazelier/gradle/jasperreports as it seems to be abandoned.
+Forked from https://github.com/gmazelier/gradle-jasperreports as it seems to be abandoned.
 
 I updated gradle and location of maven dependencies, as e.g. "jcenter" is down as of 2022
 
