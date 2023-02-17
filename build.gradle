@@ -1,7 +1,6 @@
 plugins {
+	id 'org.jetbrains.kotlin.jvm' version '1.8.10'
 	id 'com.gradle.plugin-publish' version '1.1.0'
-	id 'net.researchgate.release' version '2.6.0'
-	id 'groovy'
 	id 'maven-publish'
 	id 'java-gradle-plugin'
 }
@@ -13,13 +12,11 @@ version = project.property('version')
 
 repositories {
 	mavenCentral()
-  	maven { url 'https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/' }
+  	// maven { url 'https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/' }
 }
 
 dependencies {
-	implementation 'com.lowagie:itext:2.1.7'
-	implementation 'net.sf.jasperreports:jasperreports:6.20.0'
-	implementation 'org.codehaus.gpars:gpars:1.2.1'
+	// Obvious test dependency is obvious
 	testImplementation 'junit:junit:4.13.1'
 }
 
@@ -28,7 +25,6 @@ gradlePlugin {
 	website = 'https://git.rehost.eu/rehost/gradle-jasperreports'
 	vcsUrl = 'https://git.rehost.eu/rehost/gradle-jasperreports.git'
 	plugins {
-
 		jasperreports {
 			id = 'eu.rehost.jasperreports'
 			description = 'Provides the capability to compile JasperReports design files.'
@@ -41,38 +37,14 @@ gradlePlugin {
 publishing {
 	// uncomment the following section to publish plugin to local maven repository using the following task:
 	// $ gradle publishToMavenLocal
-	/*
 	repositories {
-		mavenLocal()
-	}
-	*/
-	publications {
-		mavenJava(MavenPublication) {
-			afterEvaluate {
-				artifact sourcesJar
-				artifact groovydocJar
-			}
+		// mavenLocal()
+		maven {
+			url = uri("../local-maven")
 		}
 	}
 }
 
-compileGroovy {
-	sourceCompatibility = '17'
-	targetCompatibility = '17'
-}
-
-tasks.register('sourcesJar', Jar) {
-	archiveClassifier.set('sources')
-	from sourceSets.main.allSource
-}
-
-tasks.register('groovydocJar', Jar) {
-	dependsOn groovydoc
-	archiveClassifier.set('groovydoc')
-	from groovydoc.destinationDir
-}
-
-artifacts {
-	archives sourcesJar
-	archives groovydocJar
+kotlin {
+	jvmToolchain(8)
 }
