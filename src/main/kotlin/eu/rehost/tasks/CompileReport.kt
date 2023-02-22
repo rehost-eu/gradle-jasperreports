@@ -14,6 +14,7 @@ import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import org.gradle.workers.WorkerExecutor
 import java.io.File
+import java.net.URLClassLoader
 import javax.inject.Inject
 
 abstract class CompileReport @Inject constructor(private val executor: WorkerExecutor) : DefaultTask() {
@@ -44,32 +45,67 @@ abstract class CompileReport @Inject constructor(private val executor: WorkerExe
             logger.warn("Setting xml validation to false is known to cause jasperreports to crash with a org.xml.sax.SAXNotSupportedException.\nThis task is very likely to fail!")
         }
 
-        val workerPool = executor.classLoaderIsolation() {
-            it.classpath.from(compilerSources)
-        }
+//        val workerPool = executor.classLoaderIsolation() {
+//            it.classpath.from(compilerSources)
+//        }
+
+        val ownLoader = Thread.currentThread().contextClassLoader
+        val compilerURLs = compilerSources.map { it.toURI().toURL() }
+        val customLoader = URLClassLoader(compilerURLs.toTypedArray(), ownLoader)
+
+        val jrcompilerClass = customLoader.loadClass("net.sf.jasperreports.engine.design.JRCompiler")
+        val compilerPrefixTag = jrcompilerClass.getDeclaredField("COMPILER_PREFIX").get(null)
+        val keepJavaTag = jrcompilerClass.getDeclaredField("COMPILER_KEEP_JAVA_FILE").get(null)
+        val tempDirTag = jrcompilerClass.getDeclaredField("COMPILER_TEMP_DIR").get(null)
+
+        val jrXMLFactoryClass = customLoader.loadClass("net.sf.jasperreports.engine.xml.JRReportSaxParserFactory")
+        val validateXMLTag = jrXMLFactoryClass.getField("COMPILER_XML_VALIDATION").get(null)
+
+        val defaultContextClass = customLoader.loadClass("net.sf.jasperreports.engine.DefaultJasperReportsContext")
+        val getDefaultCTXInstance = defaultContextClass.getMethod("getInstance")
+        val setPropertyMethod = defaultContextClass.getMethod("setProperty", String::class.java, String::class.java)
+        // val getPropertyMethod = defaultContextClass.getMethod("getProperty", String::class.java)
+        val ctxInstance = getDefaultCTXInstance.invoke(null)
+        setPropertyMethod.invoke(ctxInstance, validateXMLTag, validateXml.get().toString())
+        setPropertyMethod.invoke(ctxInstance, compilerPrefixTag, compilerPrefix.get())
+        setPropertyMethod.invoke(ctxInstance, keepJavaTag, removeSources.get().not().toString())
+        setPropertyMethod.invoke(ctxInstance, tempDirTag, temporaryDir.absolutePath)
+
+        val compilerManagerClass = customLoader.loadClass("net.sf.jasperreports.engine.JasperCompileManager")
 
         changes.getFileChanges(inputFiles).forEach { change ->
             if (change.fileType == FileType.DIRECTORY) return@forEach
             else if (change.file.extension != "jrxml") return@forEach
 
-            // calculated the output file name and path based on the input file path
-            val changedPath = change.normalizedPath
-            val outputTarget = outputDir.file(changedPath.substring(0, changedPath.length - 5) + "jasper").get().asFile
+            // calculated the output file name and path based on the shortest relative input file path
+            val bestBasePath = inputFiles.minBy { change.file.relativeTo(it).toPath().nameCount }
+            val changedPath = change.file.relativeTo(bestBasePath)
+            val outputTarget = outputDir.file(changedPath.path.substring(0, changedPath.path.length - 5) + "jasper").get().asFile
+
+            // make sure the output path exists before jasperreports tries to write there
+            outputTarget.parentFile.mkdirs()
 
             if (change.changeType == ChangeType.REMOVED) {
                 outputTarget.delete()
             } else {
-                workerPool.submit(CompileReportWork::class.java) {
-                    it.removeSources.set(removeSources)
-                    it.validateXml.set(validateXml.get())
-                    it.compilerPrefix.set(compilerPrefix.get())
-                    it.tempDir.set(temporaryDir.canonicalPath)
+//                workerPool.submit(CompileReportWork::class.java) {
+//                    it.removeSources.set(removeSources)
+//                    it.validateXml.set(validateXml.get())
+//                    it.compilerPrefix.set(compilerPrefix.get())
+//                    it.tempDir.set(temporaryDir.canonicalPath)
+//
+//                    it.input.set(change.file)
+//                    it.output.set(outputTarget)
+//                }
 
-                    it.input.set(change.file)
-                    it.output.set(outputTarget)
-                }
+                compilerManagerClass.getDeclaredMethod("compileReportToFile", String::class.java, String::class.java)
+                    .invoke(null, change.file.absolutePath, outputTarget.absolutePath)
             }
         }
+    }
+
+    init {
+        group = "build"
     }
 }
 interface CompileReportParameters : WorkParameters {
@@ -105,7 +141,6 @@ abstract class CompileReportWork : WorkAction<CompileReportParameters> {
         setPropertyMethod.invoke(ctxInstance, compilerPrefixTag, parameters.compilerPrefix.get())
         setPropertyMethod.invoke(ctxInstance, keepJavaTag, parameters.removeSources.get().not().toString())
         setPropertyMethod.invoke(ctxInstance, tempDirTag, parameters.tempDir.get())
-
 
         val compilerManagerClass = ownLoader.loadClass("net.sf.jasperreports.engine.JasperCompileManager")
         compilerManagerClass.getDeclaredMethod("compileReportToFile", String::class.java, String::class.java)
