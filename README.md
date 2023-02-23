@@ -1,165 +1,40 @@
 # Gradle JasperReports Plugin
 ## Info
 Forked from https://github.com/gmazelier/gradle-jasperreports as it seems to be abandoned.
-
-I updated gradle and location of maven dependencies, as e.g. "jcenter" is down as of 2022
-
+Rewritten in Kotlin as of 02.2023
 ## Description
 
-Provides the capability to compile JasperReports design files. This plugin is designed to work like the Maven plugins [Maven 2 JasperReports Plugin](http://mojo.codehaus.org/jasperreports-maven-plugin) and [JasperReports-plugin](https://github.com/alexnederlof/Jasper-report-maven-plugin). Much of this was inspired by these two projects.
+Provides the capability to compile JasperReports design files.
 
 ## Usage
 
-This plugin provides one main task, `compileAllReports`. It uses [incremental task](http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.incremental.IncrementalTaskInputs.html) feature to process out-of-date files and [parallel collections](http://gpars.codehaus.org/GParsPool) from [GPars](http://gpars.codehaus.org) for parallel processing. Adapt your build process to your own needs by defining the proper tasks depedencies (see *Custom Build Process* below).
+Just apply the plugin.
+It automatically adds a compile task that compiles .jrxml inside "src/main/jasper" to "build/reports"
 
-If your designs compilation needs to run after Groovy compilation, running `compileAllReports` should give a similar output:
-
-    $ gradle compileAllReports
-    :compileJava UP-TO-DATE
-    :compileGroovy UP-TO-DATE
-    :prepareReportsCompilation
-    :compileAllReports
-    21 designs compiled in 2222 ms
-
-    BUILD SUCCESSFUL
-
-    Total time: 6.577 secs
-
-To clean up and start fresh, simply run:
-
-    $ gradle clean compileAllReports
+You can define a custom task with custom paths.
 
 ### Installation
 
 Using the pluging DSL...
 
     plugins {
-      id "eu.rehost.jasperreports" version "0.10"
+      id "eu.rehost.jasperreports" version "0.14"
     }
-
-Using the legacy plugin application...
-
-    buildscript {
-      repositories {
-        maven {
-          url "https://plugins.gradle.org/m2/"
-        }
-      }
-      dependencies {
-        classpath "eu.rehost:jasperreports-gradle-plugin:0.10"
-      }
-    }
-
-    apply plugin: "eu.rehost.jasperreports"
 
 ### Configuration
 
-Below are the parameters that can be used to configure the build:
-
-| Parameter     | Type             | Description                                                                                   |
-|---------------|------------------|-----------------------------------------------------------------------------------------------|
-| `srcDir`      | `File`           | Design source files directory. Default value: `src/main/jasperreports`                        |
-| `tmpDir`      | `File`           | Temporary files (`.java`) directory. Default value: `${project.buildDir}/jasperreports`       |
-| `outDir`      | `File`           | Compiled reports file directory. Default value: `${project.buildDir}/classes/main`            |
-| `srcExt`      | `String`         | Design source files extension. Default value: `'.jrxml'`                                      |
-| `outExt`      | `String`         | Compiled reports files extension. Default value: `'.jasper'`                                  |
-| `compiler`    | `String`         | The report compiler to use. Default value: `net.sf.jasperreports.engine.design.JRJdtCompiler` |
-| `keepJava`    | `boolean`        | Keep temporary files after compiling. Default value: `false`                                  |
-| `validateXml` | `boolean`        | Validate source files before compiling. Default value: `true`                                 |
-| `verbose`     | `boolean`        | Verbose plugin outpout. Default value: `false`                                                |
-| `useRelativeOutDir`     | `boolean`        | The outDir is relative to java classpath. Default value: `false`                                                |
-| `classpath`   | `Iterable<File>` | Extra elements to add to the classpath when compile. Default value: `[]`                      |
-
-### Example
-
-Below is a complete example, with default values:
-
-    jasperreports {
-        srcDir = file('src/main/jasperreports')
-        tmpDir = file('${project.buildDir}/jasperreports')
-        outDir = file('${project.buildDir}/classes/main')
-        srcExt = '.jrxml'
-        outExt = '.jasper'
-        compiler = 'net.sf.jasperreports.engine.design.JRJdtCompiler'
-        keepJava = false
-        validateXml = true
-        verbose = false
-        useRelativeOutDir = false
-        classpath = []
-    }
-
-### Custom Build Process
-
-Adding a task dependency is very simple. For example, if you want to make sure that Groovy (and Java) compilation is successfully performed before JasperReports designs compilation, just add the following to your build script:
-
-    compileAllReports.dependsOn compileGroovy
-
-### Custom Classpath
-
-#### Sharing dependencies
-
-Here's a way to share dependencies (`joda-time` in this example) between the main project and the designs compilation:
-
-    buildscript {
-      ext {
-        libs = [
-          jrdeps: [
-            // all dependencies shared with JasperReports
-            'joda-time:joda-time:2.7'
-          ]
-        ]
-      }
-      repositories {
-        jcenter()
-        mavenCentral()
-        maven {
-            url 'http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/'
-        }
-        maven {
-          url 'http://jasperreports.sourceforge.net/maven2'
-        }
-        maven {
-          url 'http://repository.jboss.org/maven2/'
-        }
-      }
-      dependencies {
-        classpath 'eu.rehost:jasperreports-gradle-plugin:0.10'
-        classpath libs.jrdeps
-      }
-    }
-
-    apply plugin: 'groovy'
-    apply plugin: 'eu.rehost.jasperreports'
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-      compile libs.jrdeps
-    }
-
-    jasperreports {
-      verbose = true
-    }
-
-    compileAllReports.dependsOn compileGroovy
-
-#### Adding Project Compiled Sources
-
-Use the `classpath` property to acces your compiled sources in you JasperReports designs. Configure your build script in a similar way:
-
-    jasperreports {
-        verbose = true
-        classpath = project.sourceSets.main.output
-    }
+config documentation currently WIP
 
 ## Getting Help
 
-To ask questions or report bugs, please use the [Github project](https://git.rehost.eu/rehost/gradle-jasperreports/issues).
+To ask questions or report bugs, please use the [GitLab project](https://git.rehost.eu/rehost/gradle-jasperreports/issues).
 
 
 ## Change Log
+### 0.14 (2023-02-23)
+* Kotlin rewrite
+* Ability to change the used JasperReports Version
+
 ### 0.10 (2023-02-03)
 * Forked from gmazelier
 * Dependencies upgrade (gradle, maven, jasper)
