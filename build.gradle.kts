@@ -9,17 +9,16 @@ group = "eu.rehost.jasperreports"
 repositories {
     mavenCentral()
 }
-
 gradlePlugin {
-    website = "https://git.rehost.eu/rehost/gradle-plugins/gradle-jasperreports"
-    vcsUrl = "https://git.rehost.eu/rehost/gradle-plugins/gradle-jasperreports.git"
+    website.set("https://git.rehost.eu/rehost/gradle-plugins/gradle-jasperreports")
+    vcsUrl.set("https://git.rehost.eu/rehost/gradle-plugins/gradle-jasperreports.git")
     plugins {
         create("JasperReportsPlugin") {
             id = "eu.rehost.jasperreports"
             description = "Provides the capability to compile JasperReports design files."
             implementationClass = "eu.rehost.jasperreports.JasperReportsPlugin"
             displayName = "Gradle JasperReports Plugin"
-            tags.set(listOf("jasperreports"))
+            tags.set(listOf("jasper", "jasperreports", "reporting"))
         }
     }
 }
@@ -27,13 +26,11 @@ gradlePlugin {
 publishing {
     repositories {
         maven {
+            name = "GitLab"
             url = uri("https://git.rehost.eu/api/v4/projects/134/packages/maven")
             credentials {
-                username = "maven"
-                password = ""
-            }
-            authentication {
-                create("basic", BasicAuthentication::class)
+                username = providers.gradleProperty("mavenUser").get()
+                password = providers.gradleProperty("mavenPassword").get()
             }
         }
     }
