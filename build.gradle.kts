@@ -1,6 +1,5 @@
 plugins {
     id("com.gradle.plugin-publish") version "2.0.0"
-    id("org.ajoberstar.reckon") version "1.0.1"
     kotlin("jvm") version "2.2.20"
 }
 
