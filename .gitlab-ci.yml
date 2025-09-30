@@ -1,5 +1,5 @@
 default:
-  image: gradle:jdk17
+  image: openjdk:17-slim
 
 stages:
   - build
@@ -14,15 +14,16 @@ cache:
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
+  - chmod +x gradlew
   - echo "Java version:"
   - java -version
-  - echo "Gradle version:"
-  - gradle --version
+  - echo "Gradle version from wrapper:"
+  - ./gradlew --version
 
 build:
   stage: build
   script:
-    - gradle build
+    - ./gradlew build
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
     - if: '$CI_COMMIT_TAG'
@@ -30,7 +31,7 @@ build:
 test:
   stage: test
   script:
-    - gradle check
+    - ./gradlew check
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
     - if: '$CI_COMMIT_TAG'
@@ -39,7 +40,7 @@ test:
 publish:
   stage: publish
   script:
-    - gradle publish
+    - ./gradlew publish
   rules:
     - if: '$CI_COMMIT_TAG'
   needs: ["test"]
@@ -48,7 +49,7 @@ publish_to_portal:
   stage: publish
   script:
     - >
-      gradle publishPlugins
+      ./gradlew publishPlugins
       -Pgradle.publish.key=$GRADLE_PUBLISH_KEY
       -Pgradle.publish.secret=$GRADLE_PUBLISH_SECRET
   rules:
