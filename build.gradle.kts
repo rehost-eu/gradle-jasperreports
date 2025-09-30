@@ -29,8 +29,8 @@ publishing {
             name = "GitLab"
             url = uri("https://git.rehost.eu/api/v4/projects/134/packages/maven")
             credentials {
-                username = providers.gradleProperty("mavenUser").get()
-                password = providers.gradleProperty("mavenPassword").get()
+                username = providers.gradleProperty("mavenUser").orNull
+                password = providers.gradleProperty("mavenPassword").orNull
             }
         }
     }
