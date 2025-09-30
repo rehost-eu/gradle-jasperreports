@@ -43,3 +43,15 @@ publish:
   rules:
     - if: '$CI_COMMIT_TAG'
   needs: ["test"]
+
+publish_to_portal:
+  stage: publish
+  script:
+    - >
+      gradle publishPlugins
+      -Pgradle.publish.key=$GRADLE_PUBLISH_KEY
+      -Pgradle.publish.secret=$GRADLE_PUBLISH_SECRET
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: manual
+  needs: [ "test" ]
