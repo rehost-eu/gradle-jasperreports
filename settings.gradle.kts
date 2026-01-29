@@ -7,6 +7,7 @@ extensions.configure<org.ajoberstar.reckon.gradle.ReckonExtension> {
     snapshots()
     setScopeCalc(calcScopeFromProp().or(calcScopeFromCommitMessages()))
     setStageCalc(calcStageFromProp())
+    setTagWriter { version -> "v$version" }
 }
 
 
