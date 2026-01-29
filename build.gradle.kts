@@ -5,10 +5,6 @@ plugins {
 
 group = "eu.rehost.jasperreports"
 
-kotlin {
-    jvmToolchain(21)
-}
-
 repositories {
     mavenCentral()
 }
