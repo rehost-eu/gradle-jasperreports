@@ -1,5 +1,5 @@
 default:
-  image: openjdk:17-slim
+  image: eclipse-temurin:24-jdk-alpine
 
 stages:
   - build
