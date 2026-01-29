@@ -124,13 +124,42 @@ abstract class CompileReportWork : WorkAction<CompileReportParameters> {
             val compilerPrefixTag = jrCompilerClass.getField("COMPILER_PREFIX").get(null) as String
             val keepJavaTag = jrCompilerClass.getField("COMPILER_KEEP_JAVA_FILE").get(null) as String
             val tempDirTag = jrCompilerClass.getField("COMPILER_TEMP_DIR").get(null) as String
-            val validateXmlTag = jrSaxParserFactoryClass.getField("COMPILER_XML_VALIDATION").get(null) as String
+
+            // COMPILER_XML_VALIDATION was removed in JasperReports 7.
+            // We safely check for its existence.
+            val validateXmlTagField = try {
+                jrSaxParserFactoryClass.getField("COMPILER_XML_VALIDATION")
+            } catch (e: NoSuchFieldException) {
+                null
+            }
 
             val contextInstance = defaultContextClass.getMethod("getInstance").invoke(null)
             val setPropertyMethod = defaultContextClass.getMethod("setProperty", String::class.java, String::class.java)
 
-            setPropertyMethod.invoke(contextInstance, validateXmlTag, parameters.validateXml.get().toString())
-            setPropertyMethod.invoke(contextInstance, compilerPrefixTag, parameters.compiler.get())
+            if (validateXmlTagField != null) {
+                val validateXmlTag = validateXmlTagField.get(null) as String
+                setPropertyMethod.invoke(contextInstance, validateXmlTag, parameters.validateXml.get().toString())
+            }
+
+            // Handle Compiler Class Name Migration (JR 6 -> JR 7)
+            var compilerClassName = parameters.compiler.get()
+            // If the default JDT compiler is configured but not found, try the new JR 7 package structure
+            if (compilerClassName == "net.sf.jasperreports.engine.design.JRJdtCompiler") {
+                try {
+                    contextClassLoader.loadClass(compilerClassName)
+                } catch (e: ClassNotFoundException) {
+                    val v7CompilerName = "net.sf.jasperreports.jdt.JRJdtCompiler"
+                    try {
+                        contextClassLoader.loadClass(v7CompilerName)
+                        // If we found the new class, use it
+                        compilerClassName = v7CompilerName
+                    } catch (ignore: ClassNotFoundException) {
+                        // Neither found, proceed with original to let it fail normally or be handled elsewhere
+                    }
+                }
+            }
+
+            setPropertyMethod.invoke(contextInstance, compilerPrefixTag, compilerClassName)
             setPropertyMethod.invoke(contextInstance, keepJavaTag, parameters.removeJavaSources.get().not().toString())
             setPropertyMethod.invoke(contextInstance, tempDirTag, parameters.tempDir.get().absolutePath)
 

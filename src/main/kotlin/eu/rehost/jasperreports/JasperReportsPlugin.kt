@@ -30,10 +30,31 @@ class JasperReportsPlugin : Plugin<Project> {
             conf.isCanBeResolved = true
             conf.description = "The JasperReports compiler dependencies used by the compile tasks."
             conf.defaultDependencies { deps ->
-                // Add default dependencies. Users can override by adding their own to this configuration.
-                deps.add(project.dependencies.create("net.sf.jasperreports:jasperreports:6.21.0"))
-                // iText is a common dependency for PDF generation, included for convenience.
-                deps.add(project.dependencies.create("com.lowagie:itext:2.1.7.js10"))
+                // Default version
+                var jasperVersion = "6.21.0"
+
+                // Try to identify the version used in the project's implementation configuration
+                val implementation = project.configurations.findByName("implementation")
+                val projectDependency = implementation?.dependencies?.find {
+                    it.group == "net.sf.jasperreports" && it.name == "jasperreports"
+                }
+
+                if (projectDependency?.version != null) {
+                    jasperVersion = projectDependency.version!!
+                }
+
+                // Add main dependency
+                deps.add(project.dependencies.create("net.sf.jasperreports:jasperreports:$jasperVersion"))
+
+                if (jasperVersion.startsWith("7")) {
+                    // JasperReports 7 moved the ECJ compiler to a separate artifact.
+                    // We must add it explicitly to enable compilation.
+                    deps.add(project.dependencies.create("net.sf.jasperreports:jasperreports-jdt:$jasperVersion"))
+                } else {
+                    // iText is a common dependency for PDF generation in older versions, included for convenience.
+                    // In v7, this is handled differently or transitive.
+                    deps.add(project.dependencies.create("com.lowagie:itext:2.1.7.js10"))
+                }
             }
         }
 
@@ -52,6 +73,8 @@ class JasperReportsPlugin : Plugin<Project> {
             task.compilerClasspath.from(compilerDeps)
             task.validateXml.convention(true)
             task.removeJavaSources.convention(true)
+            // Default to the classic compiler name. The worker action handles the migration
+            // to the new package structure for JasperReports 7 automatically if needed.
             task.compiler.convention("net.sf.jasperreports.engine.design.JRJdtCompiler")
         }
 
