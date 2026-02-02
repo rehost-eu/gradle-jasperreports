@@ -24,6 +24,22 @@ gradlePlugin {
     }
 }
 
+publishing {
+    repositories {
+        maven {
+            name = "GitLab"
+            url = uri("https://git.rehost.eu/api/v4/projects/134/packages/maven")
+            credentials(HttpHeaderCredentials::class) {
+                name = if (System.getenv("CI_JOB_TOKEN") != null) "Job-Token" else "Private-Token"
+                value = System.getenv("CI_JOB_TOKEN") ?: providers.gradleProperty("gitlabApiToken").orNull
+            }
+            authentication {
+                create("header", HttpHeaderAuthentication::class)
+            }
+        }
+    }
+}
+
 repositories {
     mavenCentral()
 }
